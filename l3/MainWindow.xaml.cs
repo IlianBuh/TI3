@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.ObjectModel;
+using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,6 +13,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using l3.Encoder.data;
 using l3.Encoder.transport;
+using l3.pkg.mapper;
+using l3.Services.FileViewer;
 using Microsoft.Win32;
 
 namespace l3;
@@ -22,11 +25,15 @@ namespace l3;
 public partial class MainWindow : Window
 {
     private API api;
+    private FileViewer fileViewer;
     private int y;
+    private ObservableCollection<int> GList { get; set; }
     public MainWindow()
     {
         InitializeComponent();
         this.api = new(new Encoder.service.Encoder(new DataProvider()));
+        this.fileViewer = new FileViewer();
+        this.GList = new();
     }
 
     public void FetchFileToLoad(object sender, EventArgs e)
@@ -41,14 +48,12 @@ public partial class MainWindow : Window
     public void FetchFileToSave(object sender, EventArgs e)
     {
         var fileDialog = new SaveFileDialog();
-        fileDialog.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
         fileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         fileDialog.Title = "Save File As";
         
         if (fileDialog.ShowDialog() == true)
         {
             this.txtOutputFile.Text = fileDialog.FileName;
-            this.showInputFile(fileDialog.FileName);
         }
     }
 
@@ -83,7 +88,7 @@ public partial class MainWindow : Window
     
     public void CalculatePublicKey(object sender, EventArgs e)
     {
-        List<int> g = new List<int>();
+        var g = new List<int>();
         string msg;
         int p = int.Parse(this.txtP.Text);
         
@@ -91,13 +96,13 @@ public partial class MainWindow : Window
         (g, msg) = this.api.FetchPrimitiveG(p);
         if (msg != "") {
             MessageBox.Show(errMsg(msg));
+            return;
         }
 
         gList.ItemsSource = g;
         gList.SelectedIndex = 0;
-
+        
         this.createNewPublicKey();
-
     }
 
     private void assemblePublicKey(string p, string g, string y)
@@ -118,13 +123,7 @@ public partial class MainWindow : Window
 
     private void showInputFile(string p)
     {
-        var bytes = File.ReadAllBytes(p);
-        StringBuilder s = new StringBuilder(bytes.Length*4);
-        foreach (var b in bytes)
-        {
-            s.Append(b.ToString("D3"));
-            s.Append(",");
-        }
-        this.txtInputFileContent.Text = s.ToString();
+        this.txtInputFileContent.Text = this.fileViewer.ReadEncFile(p);
     }
+    
 }

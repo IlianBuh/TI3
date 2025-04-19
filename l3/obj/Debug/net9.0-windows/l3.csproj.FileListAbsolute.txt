@@ -13,7 +13,6 @@ C:\BSUIR\ТИ\ТИ_2025\l3\l3\l3\obj\Debug\net9.0-windows\l3.GeneratedMSBuildEdi
 C:\BSUIR\ТИ\ТИ_2025\l3\l3\l3\obj\Debug\net9.0-windows\l3.AssemblyInfoInputs.cache
 C:\BSUIR\ТИ\ТИ_2025\l3\l3\l3\obj\Debug\net9.0-windows\l3.AssemblyInfo.cs
 C:\BSUIR\ТИ\ТИ_2025\l3\l3\l3\obj\Debug\net9.0-windows\l3.csproj.CoreCompileInputs.cache
-C:\BSUIR\ТИ\ТИ_2025\l3\l3\l3\obj\Debug\net9.0-windows\l3.sourcelink.json
 C:\BSUIR\ТИ\ТИ_2025\l3\l3\l3\obj\Debug\net9.0-windows\l3.dll
 C:\BSUIR\ТИ\ТИ_2025\l3\l3\l3\obj\Debug\net9.0-windows\refint\l3.dll
 C:\BSUIR\ТИ\ТИ_2025\l3\l3\l3\obj\Debug\net9.0-windows\l3.pdb

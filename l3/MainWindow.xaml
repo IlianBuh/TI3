@@ -133,7 +133,7 @@
             <GroupBox Grid.Column="0" Header="Encryption Parameters">
                 <StackPanel>
                     <Label Content="Prime (p):"/>
-                    <TextBox x:Name="txtP" Text="23"/>
+                    <TextBox x:Name="txtP" Text="13"/>
                     
                     <Label Content="Private Key (x):"/>
                     <TextBox x:Name="txtX" Text="5"/>
@@ -152,7 +152,8 @@
                               Margin="5"
                               Width="200"
                               HorizontalAlignment="Left"
-                              SelectionChanged="SetNewG">
+                              SelectionChanged="SetNewG"
+                              ItemsSource="{Binding GList, Mode=TwoWay, ElementName=MainWindow}">
                         <ComboBox.Style>
                             <Style TargetType="ComboBox">
                                 <!-- Основные стили -->

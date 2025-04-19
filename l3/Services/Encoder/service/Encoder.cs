@@ -18,10 +18,11 @@ public class Encoder: IEncoder
         byte[] data;
         data = this.dataPrvdr.Fetch();
         byte[] output = new byte[data.Length * 2];
-        int idx = 0;
+        int idx;
         byte a, b;
         while (data.Length > 0)
         {
+            idx = 0;
             foreach (byte d in data)
             {
                 (a, b) = this.encodeByte(d, g, y, k, p);
