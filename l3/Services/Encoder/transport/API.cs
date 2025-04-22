@@ -23,7 +23,11 @@ public class API
             return sendErr(msg);
         }
 
-        this.encoder.Encode(p, g, y, k, dest, src);
+        msg = this.encoder.Encode(p, g, y, k, dest, src);
+        if (msg != "")
+        {
+            return $"Failed to encode.\n{msg}";
+        }
         
         return "";
     }

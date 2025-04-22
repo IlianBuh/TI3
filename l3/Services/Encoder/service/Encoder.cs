@@ -7,12 +7,13 @@ namespace l3.Encoder.service;
 
 public class Encoder: IEncoder
 {
+    private const string msgInvalidByteValue = "value in file is greater than p";
     private IDataProvider dataPrvdr;
     public Encoder(IDataProvider dataProvider)
     {
         this.dataPrvdr = dataProvider;
     }
-    public void Encode(int p, int g, int y, int k,  string dest, string src)
+    public string Encode(int p, int g, int y, int k,  string dest, string src)
     {
         this.setDataPrvdr(dest, src);
 
@@ -26,6 +27,11 @@ public class Encoder: IEncoder
             idx = 0;
             foreach (byte d in data)
             {
+                if (d > p)
+                {
+                    this.dataPrvdr.Stop();
+                    return msgInvalidByteValue;
+                }
                 (a, b) = this.encodeByte(d, g, y, k, p);
                 output[idx++] = a;
                 output[idx++] = b;
@@ -36,6 +42,7 @@ public class Encoder: IEncoder
         }
         
         this.dataPrvdr.Stop();
+        return "";
     }
 
     public void Decode(int p, int x,  string dest, string src)
@@ -70,11 +77,11 @@ public class Encoder: IEncoder
     {
         var list = new List<int>();
         const int start = 2;
-        int end = p;
+        int end = p-1;
         
         var divisors = getPrimeDivisors(end); 
         
-        for (int g = start; g < end; g++)
+        for (int g = start; g <= end; g++)
         {
             if (this.isPrimitiveRoot(g, p, divisors))
             {
