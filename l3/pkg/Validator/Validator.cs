@@ -2,7 +2,6 @@ namespace l3;
 
 public static class Validator
 {
-    private const string msgGreaterThanByte = "value is greater than byte";
     private const string msgNotPrime = "value is not prime";
     private const string msgOutOfRange = "value is out of range";
     private const string msgNotRelativelyPrime = "values are not relatively prime";
@@ -10,11 +9,6 @@ public static class Validator
     public static (string, bool) P(int p)
     {
         Func<string, (string, bool)> sendErr = (string msg) => (msg, false);
-
-        if (!isInByte(p))
-        {
-            return sendErr(msgGreaterThanByte);
-        }
 
         if (!isPrime(p))
         {
@@ -53,12 +47,7 @@ public static class Validator
 
         return ("", true);
     }
-
-    private static bool isInByte(int val)
-    {
-        return (val & (256 - 1)) == val;
-    }
-
+    
     private static  bool isPrime(int val)
     {
         if (val <= 1) return false;
@@ -87,19 +76,21 @@ public static class Validator
         int x0=1, x1=0; 
         int y0=0, y1=1;
         int q, d2, x2, y2;
-        while (d1 > 1)
+        while (d1 != 0)
         {
             q = d0 / d1;
             d2 = d0 % d1;
-            x2 = x0 - q * x1;
-            y2 = y0 - q * y1;
             d0 = d1;
             d1 = d2;
+            
+            x2 = x0 - q * x1;
             x0 = x1;
             x1 = x2;
+            
+            y2 = y0 - q * y1;
             y0 = y1;
             y1 = y2;
         }
-        return d1;
+        return d0;
     }
 }

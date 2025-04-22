@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using l3.Encoder.transport;
+using l3.pkg.mapper;
 
 namespace l3.Encoder.service;
 
@@ -17,9 +18,9 @@ public class Encoder: IEncoder
 
         byte[] data;
         data = this.dataPrvdr.Fetch();
-        byte[] output = new byte[data.Length * 2];
+        int[] output = new int[data.Length * 2];
         int idx;
-        byte a, b;
+        int a, b;
         while (data.Length > 0)
         {
             idx = 0;
@@ -30,7 +31,7 @@ public class Encoder: IEncoder
                 output[idx++] = b;
             }
             
-            this.dataPrvdr.Save(output);
+            this.dataPrvdr.Save(mapper.IntsToBytes(output));
             data = this.dataPrvdr.Fetch();
         }
         
@@ -43,15 +44,19 @@ public class Encoder: IEncoder
         
         byte[] data;
         data = this.dataPrvdr.Fetch();
-        int idx = 0, len = data.Length;
-        byte[] output = new byte[len / 2];
-        byte a, b;
+        int idx, len = data.Length;
+        byte[] output = new byte[len / (2 * sizeof(int))];
+        int a, b;
+        byte[] tempa = new byte[4];
+        byte[] tempb = new byte[4];
         while (data.Length > 0)
         {
-            
-            for (int i = 0;i < len;i += 2)
+            idx = 0;
+            for (int i = 0;i < len;i += sizeof(int)*2)
             {
-                output[i/2] = this.decodeByte(data[i], data[i+1], x, p);
+                tempa[0] = data[i];tempa[1] = data[i+1];tempa[2] = data[i+2];tempa[3] = data[i+3];
+                tempb[0] = data[i+4];tempb[1] = data[i+5];tempb[2] = data[i+6];tempb[3] = data[i+7];
+                output[idx++] = this.decodeByte(BitConverter.ToInt32(tempa), BitConverter.ToInt32(tempb), x, p);
             }
             
             this.dataPrvdr.Save(output);
@@ -65,7 +70,7 @@ public class Encoder: IEncoder
     {
         var list = new List<int>();
         const int start = 2;
-        int end = p - 1;
+        int end = p;
         
         var divisors = getPrimeDivisors(end); 
         
@@ -146,10 +151,10 @@ public class Encoder: IEncoder
         return x;
     }
 
-    private (byte, byte) encodeByte(int m, int g, int y, int k, int p)
+    private (int, int) encodeByte(int m, int g, int y, int k, int p)
     {
-        byte a = (byte)fastExp(g, k, p);
-        byte b = (byte)((fastExp(y, k, p) * (m % p)) % p);
+        int a = fastExp(g, k, p);
+        int b = ((fastExp(y, k, p) * (m % p)) % p);
         return (a, b);
     }
 
@@ -159,7 +164,7 @@ public class Encoder: IEncoder
         this.dataPrvdr.SetOutput(dest);
     }
 
-    private byte decodeByte(byte a, byte b, int x, int p)
+    private byte decodeByte(int a, int b, int x, int p)
     {
         return (byte)(((b % p) * fastExp(a, p - x - 1, p)) % p);
     }

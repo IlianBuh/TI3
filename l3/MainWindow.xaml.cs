@@ -70,7 +70,11 @@ public partial class MainWindow : Window
         if (msg != "")
         {
             MessageBox.Show(msg);
+            return;
         }
+
+        MessageBox.Show("Complete.");
+        this.showEncodedFile(this.txtOutputFile.Text);
     }
     public void Decode(object sender, EventArgs e)
     {
@@ -83,7 +87,12 @@ public partial class MainWindow : Window
         if (msg != "")
         {
             MessageBox.Show(msg);
+            return;
         }
+
+        MessageBox.Show("Complete.");
+        
+        this.showDecodedFile(this.txtOutputFile.Text);
     }
     
     public void CalculatePublicKey(object sender, EventArgs e)
@@ -91,8 +100,14 @@ public partial class MainWindow : Window
         var g = new List<int>();
         string msg;
         int p = int.Parse(this.txtP.Text);
-        
         Func<string, string> errMsg = (s) => $"Failed to calculate publicKey.\n{s}";
+
+        msg = this.validatePXK(int.Parse(this.txtP.Text), int.Parse(this.txtX.Text), int.Parse(this.txtK.Text));
+        if (msg != "") {
+            MessageBox.Show(errMsg(msg));
+            return;
+        }
+        
         (g, msg) = this.api.FetchPrimitiveG(p);
         if (msg != "") {
             MessageBox.Show(errMsg(msg));
@@ -123,7 +138,40 @@ public partial class MainWindow : Window
 
     private void showInputFile(string p)
     {
-        this.txtInputFileContent.Text = this.fileViewer.ReadEncFile(p);
+        this.txtInputFileContent.Text = this.fileViewer.ReadDecFile(p);
+    }
+    private void showEncodedFile(string p)
+    {
+        this.txtOutputFileContent.Text = this.fileViewer.ReadEncFile(p);
+    }
+    private void showDecodedFile(string p)
+    {
+        this.txtOutputFileContent.Text = this.fileViewer.ReadDecFile(p);
+    }
+
+    private string validatePXK(int p, int x, int k)
+    {
+        string msg;
+        bool valid;
+        (msg, valid) = Validator.P(p);
+        if (!valid)
+        {
+            return $"Invalid input values.\nP: {msg}";
+        }
+        
+        (msg, valid) = Validator.X(x, p);
+        if (!valid)
+        {
+            return $"Invalid input values.\nX: {msg}";
+        }
+        
+        (msg, valid) = Validator.K(k, p);
+        if (!valid)
+        {
+            return $"Invalid input values.\nK: {msg}";
+        }
+
+        return "";
     }
     
 }

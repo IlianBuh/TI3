@@ -8,4 +8,13 @@ static public class mapper
     {
         return new ObservableCollection<T>(l);
     }
+
+    static public byte[] IntsToBytes(int[] ints)
+    {
+        byte[] bytes = new byte[ints.Length * sizeof(int)];
+
+        Buffer.BlockCopy(ints, 0, bytes, 0, bytes.Length);
+
+        return bytes;
+    }
 }
